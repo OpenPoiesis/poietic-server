@@ -1,0 +1,44 @@
+<html>
+
+<head>
+    <title>Poietic Simulator Server Demo</title>
+    <meta charset="UTF-8">
+
+        <script src="poietic.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+<h1>Poietic Simulator Demo</h1>
+
+<h2>Model<h2>
+    
+<table>
+    <tr>
+        <td>Title</td><td id="design_title"></td>
+    </tr>
+    <tr>
+        <td>Author</td><td id="design_author"></td>
+    </tr>
+    <tr>
+        <td>License</td><td id="design_license"></td>
+    </tr>
+</table>
+    
+    
+<h2>Simulation<h2>
+<div id="demo">
+
+    <button onclick="runSimulation()">Run Simulation</button>
+</div>
+
+<div id="output">
+    <h3>Simulation Result<h3>
+    <div id="charts">
+    </div>
+</div>
+
+
+</body>
+
+</html>
