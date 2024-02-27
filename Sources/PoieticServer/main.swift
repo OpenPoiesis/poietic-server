@@ -13,20 +13,53 @@ import Dispatch
 
 
 class PoieticServer: HttpServer {
-    let memory: ObjectMemory
-    
-    init(memory: ObjectMemory) {
-        self.memory = memory
+    let frame: Frame
+    let model: CompiledModel
+
+    init(frame: Frame, model: CompiledModel) throws {
+        self.frame = frame
+        self.model = model
+        
         super.init()
+        
         self["design"] = self.getDesign
-//        self["sheets"] = self.getSheetList
-//        self["sheet"] = self.getSheet
         self["simulate"] = self.simulate
     }
     
+    
+    /// Get the design and compiled model.
+    ///
+    /// Result properties:
+    ///
+    /// - `design_info` - human-relevant information about the design, the
+    ///   keys are: `title`, `author`, `license`, `abstract` and `documentation`;
+    ///   all design info keys are optional.
+    /// - `objects` - a dictionary of all design objects, where the keys are
+    ///   object IDs and values are the objects with their attributes.
+    /// - `nodes` - list of IDs of nodes
+    /// - `edges` - list of IDs of edges
+    /// - `control_bindings` - list of resolved bindings
+    ///
+    /// The object dictionary:
+    ///
+    /// - `id` – object ID
+    /// - `type` – object type name
+    /// - `structure` – object structure type: `unstructured`, `node`, `edge`
+    /// - `origin` and `target` for edge structure type
+    /// - `parent` – ID of parent object (if present)
+    /// - attributes of the object depending on the object type
+    ///
+    /// The control bindings structure is:
+    ///
+    /// - `control_node_id` – ID of a node that represents the control
+    /// - `variable_node_id` – ID of a node that contains a simulation variable
+    ///    that is being controlled
+    /// - `variable_index` – index of the controlled variable in the list of
+    ///    result variables
+    ///
     func getDesign(request: HttpRequest) -> HttpResponse {
+        let simulator = Simulator(model: model)
         var result: [String:Any] = [:]
-        let frame = memory.currentFrame
         
         // All objects, id -> Object
         var objects: [String:Any] = [:]
@@ -52,52 +85,99 @@ class PoieticServer: HttpServer {
         if let designInfo = frame.first(type: ObjectType.DesignInfo) {
             result["design_info"] = designInfo.foreignRecord().asJSONObject()
         }
+        
+        // We need to initialize the state to get the control values
+        simulator.initializeState()
+
+        let controlValues = simulator.controlValues()
+        var bindings: [[String:Any]] = []
+        for binding in model.valueBindings {
+            let variable = model.computedVariables[binding.variableIndex]
+            var record: [String:Any] = [:]
+            record["control_node_id"] = binding.control
+            record["variable_index"] = model.resultIndex(of: variable.id)
+            record["variable_name"] = variable.name
+            record["variable_node_id"] = variable.id
+            record["initial_value"] = controlValues[binding.control]
+            bindings.append(record)
+        }
+        
 
         result["objects"] = objects
         result["nodes"] = nodes
         result["edges"] = edges
+        result["control_bindings"] = bindings
         
         return .ok(.json(result))
     }
-
+    
+    func parseParameters(parameters: [String:String]) -> [String:ForeignValue] {
+        var result: [String:ForeignValue] = [:]
+        for (key, value) in parameters {
+            let foreignValue = ForeignValue(value)
+            result[key] = foreignValue
+        }
+        return result
+    }
     func simulate(request: HttpRequest) -> HttpResponse {
         // let startTime = Double(request.params["start"] ?? "0.0")
         // let timeDelta = Double(request.params["timeDelta"] ?? "1.0")
 //        guard let steps = Int(request.queryParams["steps"] ?? "10") else {
 //            return .badRequest(.text("Invalid steps number: \(request.params["steps"])"))
 //        }
+
+        // Prepare the simulation
+        // -----------------------------------------------------
+
         let steps = 100
-        let simulator = Simulator(memory: memory)
+        let simulator = Simulator(model: model)
         let view: StockFlowView
         
+        // Override parameters from controls
+        // -----------------------------------------------------
+        print("=== Simulate")
+        let overrideConstants: [ObjectID: Double]
+        
         do {
-            let frame = memory.deriveFrame(original: memory.currentFrame.id)
-            view = StockFlowView(frame)
-            try simulator.compile(frame)
+            // TODO: Get only controls
+            overrideConstants = try convertForeignParameters(request.queryParams, model: model)
         }
-        catch {
-            print("Something went wrong: \(error)")
+        catch let error as ToolError {
+            // FIXME: Return detailed error
+            print("ERROR: \(error)")
             return .internalServerError
         }
-        simulator.initializeSimulation()
+        catch {
+            print("UNKNOWN ERROR: \(error)")
+            return .internalServerError
+
+        }
+
+        simulator.initializeState(override: overrideConstants)
+
+        // Run the Simulation
+        // -----------------------------------------------------
         simulator.run(steps)
 
+        // Process simulation output
+        // -----------------------------------------------------
         let output: [[Any]] = simulator.output.map { state in
             state.allValues.map { $0.asJSONObject() }
         }
         
         var result: [String:Any] = [:]
-        let all_variables = simulator.compiledModel!.allVariables
         
         result["data"] = output
         
         var variables: [Any] = []
-        for compiled_variable in all_variables {
+        for (index, simVariable) in model.allVariables.enumerated() {
             var variable: [String:Any] = [:]
-            variable["index"] = compiled_variable.index
-            variable["name"] = compiled_variable.name
-            variable["type"] = String(describing: compiled_variable.type)
-            variable["id"] = compiled_variable.id
+            variable["index"] = index
+            variable["name"] = simVariable.name
+            variable["type"] = String(describing: simVariable.type)
+            if let id = simVariable.id {
+                variable["id"] = id
+            }
             variables.append(variable)
         }
         result["variables"] = variables
@@ -108,8 +188,7 @@ class PoieticServer: HttpServer {
         
         var charts: [Any] = []
         
-        let model = simulator.compiledModel!
-        for chart in view.charts {
+        for chart in model.charts {
             var chart_info: [String:Any] = [:]
             chart_info["id"] = chart.node.id
             var chart_series: [Any] = []
@@ -145,7 +224,10 @@ struct PoieticTool: ParsableCommand {
         print("DB: \(database)")
 
         let memory = try openMemory(path: database)
-        let server = PoieticServer(memory: memory)
+        let frame = memory.deriveFrame(original: memory.currentFrame.id)
+        let compiledModel = try compile(frame)
+        
+        let server = try PoieticServer(frame: frame, model: compiledModel)
 
         print("Starting server...")
         let semaphore = DispatchSemaphore(value: 0)
