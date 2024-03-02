@@ -111,10 +111,10 @@ class PoieticServer: HttpServer {
         return .ok(.json(result))
     }
     
-    func parseParameters(parameters: [String:String]) -> [String:ForeignValue] {
-        var result: [String:ForeignValue] = [:]
+    func parseParameters(parameters: [String:String]) -> [String:Variant] {
+        var result: [String:Variant] = [:]
         for (key, value) in parameters {
-            let foreignValue = ForeignValue(value)
+            let foreignValue = Variant(value)
             result[key] = foreignValue
         }
         return result
