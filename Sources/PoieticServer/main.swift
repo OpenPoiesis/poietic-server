@@ -157,6 +157,11 @@ class PoieticServer: HttpServer {
 
         // Run the Simulation
         // -----------------------------------------------------
+        let defaultSteps = simulator.compiledModel.simulationDefaults?.simulationSteps
+//        let actualSteps = steps ?? defaultSteps ?? 10
+        let actualSteps = defaultSteps ?? 10
+        simulator.run(actualSteps)
+
         simulator.run(steps)
 
         // Process simulation output
