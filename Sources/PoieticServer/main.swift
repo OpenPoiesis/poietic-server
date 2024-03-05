@@ -70,7 +70,7 @@ class PoieticServer: HttpServer {
 
         for object in frame.snapshots {
             let record = object.foreignRecord()
-            let json = record.asJSONObject()
+            let json = record.asJSON()
             objects[String(object.id)] = json
 
             // Extract by structure type
@@ -83,7 +83,7 @@ class PoieticServer: HttpServer {
         }
         
         if let designInfo = frame.first(type: ObjectType.DesignInfo) {
-            result["design_info"] = designInfo.foreignRecord().asJSONObject()
+            result["design_info"] = designInfo.foreignRecord().asJSON()
         }
         
         // We need to initialize the state to get the control values
@@ -167,7 +167,7 @@ class PoieticServer: HttpServer {
         // Process simulation output
         // -----------------------------------------------------
         let output: [[Any]] = simulator.output.map { state in
-            state.allValues.map { $0.asJSONObject() }
+            state.allValues.map { $0.asJSON() }
         }
         
         var result: [String:Any] = [:]
