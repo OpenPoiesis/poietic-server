@@ -87,7 +87,13 @@ class PoieticServer: HttpServer {
         }
         
         // We need to initialize the state to get the control values
-        simulator.initializeState()
+        do {
+            try simulator.initializeState()
+        }
+        catch {
+            print("ERROR: \(error)")
+            return .internalServerError
+        }
 
         let controlValues = simulator.controlValues()
         var bindings: [[String:Any]] = []
@@ -153,16 +159,27 @@ class PoieticServer: HttpServer {
 
         }
 
-        simulator.initializeState(override: overrideConstants)
+        do {
+            try simulator.initializeState(override: overrideConstants)
+        }
+        catch {
+            print("RUNTIME ERROR: \(error)")
+            return .internalServerError
+        }
 
         // Run the Simulation
         // -----------------------------------------------------
         let defaultSteps = simulator.compiledModel.simulationDefaults?.simulationSteps
 //        let actualSteps = steps ?? defaultSteps ?? 10
         let actualSteps = defaultSteps ?? 10
-        simulator.run(actualSteps)
 
-        simulator.run(steps)
+        do {
+            try simulator.run(actualSteps)
+        }
+        catch {
+            print("RUNTIME ERROR: \(error)")
+            return .internalServerError
+        }
 
         // Process simulation output
         // -----------------------------------------------------
