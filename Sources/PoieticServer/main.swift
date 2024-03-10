@@ -69,7 +69,7 @@ class PoieticServer: HttpServer {
         var edges: [String] = []
 
         for object in frame.snapshots {
-            let record = object.foreignRecord()
+            let record = object.asForeignObject()
             let json = record.asJSON()
             objects[String(object.id)] = json
 
@@ -83,7 +83,7 @@ class PoieticServer: HttpServer {
         }
         
         if let designInfo = frame.first(type: ObjectType.DesignInfo) {
-            result["design_info"] = designInfo.foreignRecord().asJSON()
+            result["design_info"] = designInfo.asForeignObject().attributes.asJSON()
         }
         
         // We need to initialize the state to get the control values
