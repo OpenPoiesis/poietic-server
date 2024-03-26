@@ -14,16 +14,20 @@ import PoieticFlows
 enum ToolError: Error, CustomStringConvertible {
     // I/O errors
     case malformedLocation(String)
-
+    case unableToOpen(String)
+    
     // Object errors
     case unknownObjectName(String)
     case typeMismatch(String, String, String)
     case compilationError
+    
 
     public var description: String {
         switch self {
         case .malformedLocation(let value):
             return "Malformed location: \(value)"
+        case .unableToOpen(let value):
+            return "Unable to open: \(value)"
         case .compilationError:
             return "Design compilation failed"
         case .unknownObjectName(let value):
@@ -41,8 +45,10 @@ enum ToolError: Error, CustomStringConvertible {
         switch self {
         case .malformedLocation(_):
             return nil
-        case .compilationError:
+        case .unableToOpen(_):
             return nil
+        case .compilationError:
+            return "Make sure that the model is valid, check the detailed list of model issues."
         case .unknownObjectName(_):
             return "See the list of available names by using the 'list' command."
         case .typeMismatch(_, _, _):
@@ -53,88 +59,14 @@ enum ToolError: Error, CustomStringConvertible {
 }
 
 
-
 // NOTE: Sync with Poietic/PoieticTool
 
-let defaultDatabase = "Design.poietic"
-let databaseEnvironment = "POIETIC_DESIGN"
-
-/// Get the database URL. The database location can be specified by options,
-/// environment variable or as a default name, in respective order.
-func databaseURL(path: String?) throws -> URL {
-    let location: String
-    let env = ProcessInfo.processInfo.environment
-    
-    if let path {
-        location = path
-    }
-    else if let path = env[databaseEnvironment] {
-        location = path
-    }
-    else {
-        location = defaultDatabase
-    }
-    
-    if let url = URL(string: location) {
-        if url.scheme == nil {
-            return URL(fileURLWithPath: location, isDirectory: false)
-        }
-        else {
-            return url
-        }
-    }
-    else {
-        throw ToolError.malformedLocation(location)
-    }
-}
-
-/// Opens a graph from a package specified in the options.
-///
-func openMemory(path: String?) throws -> ObjectMemory {
-    let memory: ObjectMemory = ObjectMemory(metamodel: FlowsMetamodel.self)
-    let dataURL = try databaseURL(path: path)
-
-    try memory.restoreAll(from: dataURL)
+func openMemory(url: URL, metamodel: Metamodel = FlowsMetamodel) throws -> ObjectMemory {
+    let memory: ObjectMemory = ObjectMemory(metamodel: metamodel)
+    try memory.restoreAll(from: url)
+    // TODO: Print validation errors as in the cmdline tool
     
     return memory
-}
-
-/// Compile the frame into a compiled stock-flows model.
-///
-/// This method compiles the model to be used with the simulator.
-///
-/// If the frame contains errors then the errors are printed out and an
-/// ``ToolError`` exception is raised.
-///
-func compile(_ frame: MutableFrame) throws -> CompiledModel {
-    // NOTE: Make this in sync with the Poietic flows tool
-    // TODO: Use stderr as output
-    let compiledModel: CompiledModel
-    do {
-        let compiler = Compiler(frame: frame)
-        compiledModel = try compiler.compile()
-    }
-    catch let error as NodeIssuesError {
-        for (id, issues) in error.issues {
-            for issue in issues {
-                let object = frame.object(id)
-                let label: String
-                if let name = object.name {
-                    label = "\(id)(\(name))"
-                }
-                else {
-                    label = "\(id)"
-                }
-
-                print("ERROR: node \(label): \(issue)")
-                if let issue = issue as? NodeIssue, let hint = issue.hint {
-                    print("HINT: node \(label): \(hint)")
-                }
-            }
-        }
-        throw ToolError.compilationError
-    }
-    return compiledModel
 }
 
 
