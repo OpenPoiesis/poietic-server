@@ -191,7 +191,7 @@ struct DesignController<Context: RequestContext> {
             )
             charts.append(outChart)
         }
-        
+
         // NOTE: This is needed because JSON encoder encodes [ObjectID:Double] as an array.
         let controls: [String:Double] = Dictionary(uniqueKeysWithValues:
             simulator.currentControlValues().map({ (key, value) in

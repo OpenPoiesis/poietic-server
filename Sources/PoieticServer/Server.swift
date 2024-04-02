@@ -34,13 +34,15 @@ struct PoieticServerTool: AsyncParsableCommand {
 
         let library = try libraryInfo(from: libraryLocation)
         
+        print("Serving \(library.items.count) models.")
+        
         // create router and add a single GET /hello route
         let router = Router()
         router.get("/models") { request, context in
             library.items
         }
         
-        router.get("/model/:name") { request, context in
+        router.get("/models/:name") { request, context in
             guard let name = context.parameters.get("name") else {
                 throw HTTPError(.badRequest, message: "No design name given.")
             }
@@ -53,7 +55,7 @@ struct PoieticServerTool: AsyncParsableCommand {
             return try controller.getDesign(request: request, context: context)
         }
 
-        router.get("/model/:name/run") { request, context in
+        router.get("/models/:name/run") { request, context in
             guard let name = context.parameters.get("name") else {
                 throw HTTPError(.badRequest, message: "No design name given.")
             }

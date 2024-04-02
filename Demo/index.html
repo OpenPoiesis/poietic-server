@@ -1,38 +1,47 @@
 <html>
 
-<head>
-    <title>Poietic Simulator Server Demo</title>
-    <meta charset="UTF-8">
+    <head>
+        <title>Poietic Simulator Server Demo</title>
+        <meta charset="UTF-8">
+            
+            <link rel="stylesheet" href="style.css">
+                
+                <script src="poietic.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                
+                <link rel="preconnect" href="https://fonts.googleapis.com">
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+                <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 
-        <script src="poietic.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+    </head>
 
 <body>
 <h1>Poietic Simulator Demo</h1>
 
-<h2>Model<h2>
+<form id="modelsSelectionForm">
+    <select name="model" id="modelSelection" onchange="selectModel()">
+    </select>
+</form>
+
+<h2>Model</h2>
     
 <table>
     <tr>
         <td>Title</td><td id="design_title"></td>
     </tr>
-    <tr>
-        <td>Author</td><td id="design_author"></td>
-    </tr>
-    <tr>
-        <td>License</td><td id="design_license"></td>
-    </tr>
+<!--    <tr>-->
+<!--        <td>Author</td><td id="design_author"></td>-->
+<!--    </tr>-->
+    
 </table>
-   
+
 <h2>Control</h2>
 <form id="controls">
 </form>
     
 <h2>Simulation<h2>
 <div id="demo">
-
-    <button onclick="runSimulation()">Run Simulation</button>
+    <button onclick="runSimulation()">Refresh</button>
 </div>
 
 <div id="output">
