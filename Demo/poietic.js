@@ -113,8 +113,9 @@ function objectWithID(id) {
 
 
 function createChartSeries(series) {
+    let seriesObject = objectWithID(series.id)
     let result = {
-        label: series.name,
+        label: seriesObject.attributes.name,
         data: series.data
     }
     

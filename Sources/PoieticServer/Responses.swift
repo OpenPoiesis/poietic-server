@@ -1,9 +1,12 @@
 //
-//  File.swift
+//  Response.swift
 //  
 //
 //  Created by Stefan Urbanek on 25/03/2024.
 //
+
+// TODO: This is a draft of potential server/foreign API.
+// TODO: Consider prefix `Foreign` for anything importable
 
 // NOTE: This is an exploration of requirements for the server.
 

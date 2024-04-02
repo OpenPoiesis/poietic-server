@@ -35,7 +35,7 @@ POIETIC="${POIETIC:-poietic}"
 
 # Path to the output directory, default ./out
 OUTPUT_DIR="${OUTPUT:-./ModelLibrary}"
-FRAMES_PATH="../PoieticExamples"
+FRAMES_PATH="${FRAMES_PATH:-../PoieticExamples}"
 
 if ! command -v ${POIETIC} &> /dev/null
 then
