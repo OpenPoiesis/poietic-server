@@ -1,15 +1,22 @@
 #!/bin/zsh
 #
-# Script to make a library of models to be served
+# Script to make a library of models to be served.
+#
+# The script will:
+#
+# 1. Search for `*.poieticframe` source files in `FRAMES_PATH` (default: `../PoieticExamples`)
+# 2. Creates a design file for each frame.
+# 3. Creates a library `poietic-library.json` in current directory.
+#
+# Requires: poietic tool from PoieticFlows to be available in PATH.
 #
 # Usage:
 #
-# ./run PATH_TO_POIETIC_FRAME
+# ./create-examples-library
 #
-# Uses the following environment variables:
-# 
-# POIETIC - path to the poietic executable, if not found in PATH (required)
-# OUTPUT - path to the output library directory, default: ./ModelLibrary
+# With explicit path:
+#
+# FRAMES_PATH=MyFrames ./create-examples-library
 #
 
 set -e
@@ -30,7 +37,6 @@ POIETIC="${POIETIC:-poietic}"
 OUTPUT_DIR="${OUTPUT:-./ModelLibrary}"
 FRAMES_PATH="../PoieticExamples"
 
-
 if ! command -v ${POIETIC} &> /dev/null
 then
 	echo "ERROR: Poietic command '${TOOL}' not found. Set POIETIC environment variable with a valid executable path." 1>&2
@@ -40,6 +46,7 @@ then
 fi
 
 
+echo "Creating ${OUTPUT_DIR}"
 mkdir -p "${OUTPUT_DIR}"
 
 all_frames=($(find $FRAMES_PATH -name '*.poieticframe' ))
@@ -47,16 +54,13 @@ all_frames=($(find $FRAMES_PATH -name '*.poieticframe' ))
 for frame_path in ${all_frames[*]}; do
     frame_name=$(basename -- $frame_path)
     frame_name=${frame_name%.*}
-#    frame_name=${${frame_path#$FRAMES_PATH/}%*.poieticframe}
 
     export POIETIC_DESIGN="$OUTPUT_DIR/${frame_name}.poietic"
-    echo "--- Processing ${frame_name}"
+    echo "Processing frame ${frame_name}"
     $POIETIC new --import $frame_path --auto-parameters
 done
 
+# FINALLY: Create the library!
+#
+echo "Creating library..."
 poietic create-library $OUTPUT_DIR/*.poietic
-
-# rm "${OUTPUT_DIR}/*.json" 2> /dev/null && echo "Removed previous library."
-
-exit 0
-
