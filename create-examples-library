@@ -1,0 +1,62 @@
+#!/bin/zsh
+#
+# Script to make a library of models to be served
+#
+# Usage:
+#
+# ./run PATH_TO_POIETIC_FRAME
+#
+# Uses the following environment variables:
+# 
+# POIETIC - path to the poietic executable, if not found in PATH (required)
+# OUTPUT - path to the output library directory, default: ./ModelLibrary
+#
+
+set -e
+
+# -----------------------------------------------------------------------------------
+# Some internal config, you might skip this to the next section ...
+
+# Path to the poietic tool.
+#
+# If this demo project directory share the same parent directory as the Poietic Core,
+# then make sure that the tool has been built and run this command using:
+#
+# POIETIC=../PoieticCore/.build/debug/poietic ./run PATH_TO_BUDNLE.poieticframe
+# 
+POIETIC="${POIETIC:-poietic}"
+
+# Path to the output directory, default ./out
+OUTPUT_DIR="${OUTPUT:-./ModelLibrary}"
+FRAMES_PATH="../PoieticExamples"
+
+
+if ! command -v ${POIETIC} &> /dev/null
+then
+	echo "ERROR: Poietic command '${TOOL}' not found. Set POIETIC environment variable with a valid executable path." 1>&2
+    echo "HINT: If you built PoieticFlows, then the executable is likely '.build/debug/poietic' in PoieticFlows directory" 1>&2
+    echo "HINT: Try 'export POIETIC=../PoieticFlows/.build/debug/poietic' if the PoieticFlows is in the super directory relative to this one" 1>&2
+	exit 1
+fi
+
+
+mkdir -p "${OUTPUT_DIR}"
+
+all_frames=($(find $FRAMES_PATH -name '*.poieticframe' ))
+
+for frame_path in ${all_frames[*]}; do
+    frame_name=$(basename -- $frame_path)
+    frame_name=${frame_name%.*}
+#    frame_name=${${frame_path#$FRAMES_PATH/}%*.poieticframe}
+
+    export POIETIC_DESIGN="$OUTPUT_DIR/${frame_name}.poietic"
+    echo "--- Processing ${frame_name}"
+    $POIETIC new --import $frame_path --auto-parameters
+done
+
+poietic create-library $OUTPUT_DIR/*.poietic
+
+# rm "${OUTPUT_DIR}/*.json" 2> /dev/null && echo "Removed previous library."
+
+exit 0
+

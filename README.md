@@ -2,54 +2,49 @@
 
 Simple server to locally serve and simulate Stock-and-Flow models.
 
-Important: This is just an early prototyping playground to share with my
-friends to toy-around. Nothing serious.
+_Important: This is just an early prototyping playground. Not for serious use
+at this stage._
 
 
 ## Installation
 
 Pre-requisites:
 
-- Build [Poietic Flows](https://github.com/OpenPoiesis/PoieticFlows) and place
-  the `poietic` tool somewhere convenient.
-
-Build the server:
-
-```bash
-swift build
-```
-
+1. Build and install [Poietic Flows](https://github.com/OpenPoiesis/PoieticFlows).
+   See the instructions contained in the project.
+2. Build the server: `swift build`
 
 ## Usage
 
-Download demos from [Poietic Demos](https://github.com/OpenPoiesis/Demos)
+The server requires a design library file. The file can be created using the
+Poietic tool command `poietic create-library`, see
+`poietic create-library --help` for more information about the command.
+
+### Examples
+
+Download Flows examples from [Poietic Examples](https://github.com/OpenPoiesis/PoieticExamples)
 repository.
 
-Pick a place where the data will be stored and set an environment variable
-`POIETIC_DESIGN` with that location, for example:
+Run the included script `create-examples-library`, which will:
 
-```bash
-export POIETIC_DESIGN=./demo.poietic
+1. Search for `*.poieticframe` source files in `FRAMES_PATH` (default: `../PoieticExamples`)
+2. Creates a design file for each frame.
+3. Creates a library `poietic-library.json` in current directory.
+
+Example run:
+
+```
+git clone https://github.com/OpenPoiesis/PoieticExamples
+FRAMES_PATH=PoieticExamples ./create-examples-library
 ```
 
-Using the `poietic` tool (from the Poietic Flows above) create a new database,
-import demo of your choice, do some auto-clean-up:
+Start the server:
 
 ```bash
-poietic new
-poietic import ../Poietic-demos/ThinkingInSystems/Capital.poieticframe
-poietic edit auto-parameters
+swift run poietic-server
 ```
 
-You might test it with `poietic run`.
-
-Now start the server:
-
-```bash
-swift run poietic-server $POIETIC_DESIGN
-```
-
-Open the file `Demo/index.html` in your browser.
+Open the file [Demo/index.html](Demo/index.html) in your browser.
 
 
 ## Author
