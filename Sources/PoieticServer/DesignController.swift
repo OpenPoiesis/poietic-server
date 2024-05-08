@@ -14,7 +14,7 @@ import Foundation
 
 struct DesignController<Context: RequestContext> {
     let url: URL
-    let memory: ObjectMemory
+    let design: Design
     let frame: Frame
     let model: CompiledModel
     
@@ -23,9 +23,9 @@ struct DesignController<Context: RequestContext> {
     
     init(url: URL) throws {
         self.url = url
-        self.memory = try openMemory(url: url)
-        self.frame = memory.currentFrame
-        let compiler = Compiler(frame: memory.deriveFrame())
+        self.design = try openDesign(url: url)
+        self.frame = design.currentFrame
+        let compiler = Compiler(frame: design.currentFrame)
         self.model = try compiler.compile()
     }
 

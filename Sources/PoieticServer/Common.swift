@@ -61,12 +61,13 @@ enum ToolError: Error, CustomStringConvertible {
 
 // NOTE: Sync with Poietic/PoieticTool
 
-func openMemory(url: URL, metamodel: Metamodel = FlowsMetamodel) throws -> ObjectMemory {
-    let memory: ObjectMemory = ObjectMemory(metamodel: metamodel)
-    try memory.restoreAll(from: url)
+func openDesign(url: URL, metamodel: Metamodel = FlowsMetamodel) throws -> Design {
+    let store = MakeshiftDesignStore(url: url)
+    let design: Design
+    design = try store.load(metamodel: metamodel)
     // TODO: Print validation errors as in the cmdline tool
     
-    return memory
+    return design
 }
 
 
