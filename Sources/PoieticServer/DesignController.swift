@@ -105,6 +105,7 @@ struct DesignController<Context: RequestContext> {
         
         let encoder = Hummingbird.JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
+        encoder.userInfo[Variant.CoalescedCodingTypeKey] = true
         return try encoder.encode(result, from: request, context: context)
     }
 
@@ -206,6 +207,7 @@ struct DesignController<Context: RequestContext> {
         )
         
         let encoder = Hummingbird.JSONEncoder()
+        encoder.userInfo[Variant.CoalescedCodingTypeKey] = true
         encoder.keyEncodingStrategy = .convertToSnakeCase
         return try encoder.encode(result2, from: request, context: context)
     }

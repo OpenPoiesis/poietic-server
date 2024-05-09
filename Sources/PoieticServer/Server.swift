@@ -52,7 +52,13 @@ struct PoieticServerTool: AsyncParsableCommand {
             
             let controller = try DesignController<BasicRequestContext>(url: item.url)
             
-            return try controller.getDesign(request: request, context: context)
+            do {
+                return try controller.getDesign(request: request, context: context)
+            }
+            catch {
+                print("ERROR: \(error)")
+                throw HTTPError(.internalServerError, message: "Something went wron.")
+            }
         }
 
         router.get("/models/:name/run") { request, context in
