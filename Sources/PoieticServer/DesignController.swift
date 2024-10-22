@@ -32,15 +32,15 @@ struct DesignController<Context: RequestContext> {
     func getDesign(request: Request, context: Context) throws -> Response {
         let simulator = Simulator(model: model)
         
-        let designInfo = frame.first(type: ObjectType.DesignInfo)?
-                            .asForeignObject().attributes ?? ForeignRecord()
+        let designInfo: [String:Variant] =
+            frame.first(type: ObjectType.DesignInfo)?.attributes ?? [:]
 
-        var objects: [ForeignObject] = []
+        var objects: [JSONForeignObject] = []
         var nodes: [String] = []
         var edges: [String] = []
 
         for object in frame.snapshots {
-            objects.append(object.asForeignObject())
+            objects.append(JSONForeignObject(object))
             
             // Extract by structure type
             if object.structure.type == .node {
@@ -90,10 +90,10 @@ struct DesignController<Context: RequestContext> {
             throw HTTPError(.internalServerError)
         }
 
-        var controls = exportParameterControls(simulator)
+        let controls = exportParameterControls(simulator)
 
         let result = ExportedDesign(
-            info: designInfo.dictionary,
+            info: designInfo,
             objects: objects,
             nodes: nodes,
             edges: edges,

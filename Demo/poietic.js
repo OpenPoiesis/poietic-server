@@ -30,6 +30,7 @@ var output;
 function updateLibrary() {
     // Update controls
     const container = document.getElementById("modelSelection")
+
     while(container.lastElementChild) {
         container.removeChild(container.lastElementChild)
     }

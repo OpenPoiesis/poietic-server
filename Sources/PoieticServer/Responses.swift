@@ -44,7 +44,7 @@ public struct ExportedDesign: Encodable {
     let __important_message = "THIS OUTPUT FORMAT IS A PROTOTYPE"
     let formatVersion = "0.0.1"
     let info: [String:Variant]
-    let objects: [ForeignObject]
+    let objects: [JSONForeignObject]
     let nodes: [String]
     let edges: [String]
     let stateVariables: [ExportedStateVariable]

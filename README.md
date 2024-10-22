@@ -1,42 +1,35 @@
 # Poietic Server
 
-Simple server to locally serve and simulate Stock-and-Flow models.
-
-_Important: This is just an early prototyping playground. Not for serious use
-at this stage._
+Simple server to locally serve and simulate Stock-and-Flow models. It is
+just a demonstration of potential server functionality.
 
 
 ## Installation
 
 Pre-requisites:
 
-1. Build and install [Poietic Flows](https://github.com/OpenPoiesis/PoieticFlows).
+1. Build and install [Poietic Tool](https://github.com/OpenPoiesis/PoieticTool).
    See the instructions contained in the project.
 2. Build the server: `swift build`
 
 ## Usage
 
-The server requires a design library file. The file can be created using the
-Poietic tool command `poietic create-library`, see
-`poietic create-library --help` for more information about the command.
-
 ### Examples
 
-Download Flows examples from [Poietic Examples](https://github.com/OpenPoiesis/PoieticExamples)
-repository.
+Run the following script (description follows) to prepare a library from
+examples repository:
 
-Run the included script `create-examples-library`, which will:
-
-1. Search for `*.poieticframe` source files in `FRAMES_PATH` (default: `../PoieticExamples`)
-2. Creates a design file for each frame.
-3. Creates a library `poietic-library.json` in current directory.
-
-Example run:
-
-```
+```bash
 git clone https://github.com/OpenPoiesis/PoieticExamples
-FRAMES_PATH=PoieticExamples ./create-examples-library
+./create-examples-library PoieticExamples
 ```
+
+The above script will:
+
+1. Download Flows examples from [Poietic Examples](https://github.com/OpenPoiesis/PoieticExamples).
+2. Search recursively for `*.poieticframe` in the downloaded directory
+2. Creates a new design file for each frame.
+3. Creates a library `poietic-library.json` in the current directory.
 
 Start the server:
 
@@ -44,7 +37,13 @@ Start the server:
 swift run poietic-server
 ```
 
-Open the file [Demo/index.html](Demo/index.html) in your browser.
+Open the file [Demo/index.html](Demo/index.html) in your browser and explore.
+
+### Design Library
+
+The server requires a design library file. The file can be created using the
+Poietic tool command `poietic create-library`, see
+`poietic create-library --help` for more information about the command.
 
 ## API
 

@@ -7,14 +7,14 @@
 
 import PoieticCore
 import PoieticFlows
-import ArgumentParser
+@preconcurrency import ArgumentParser
 import Foundation
 
 import Hummingbird
 
 @main
 struct PoieticServerTool: AsyncParsableCommand {
-    static var configuration = CommandConfiguration(
+    static let configuration = CommandConfiguration(
         commandName: "poietic-server",
         abstract: "Poietic-Flows simulation server."
     )

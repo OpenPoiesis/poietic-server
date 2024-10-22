@@ -16,7 +16,7 @@
 #
 # With explicit path:
 #
-# FRAMES_PATH=MyFrames ./create-examples-library
+# ./create-examples-library [FRAMES_PATH]
 #
 
 set -e
@@ -26,22 +26,18 @@ set -e
 
 # Path to the poietic tool.
 #
-# If this demo project directory share the same parent directory as the Poietic Core,
-# then make sure that the tool has been built and run this command using:
-#
-# POIETIC=../PoieticCore/.build/debug/poietic ./run PATH_TO_BUDNLE.poieticframe
-# 
 POIETIC="${POIETIC:-poietic}"
 
 # Path to the output directory, default ./out
 OUTPUT_DIR="${OUTPUT:-./ModelLibrary}"
-FRAMES_PATH="${FRAMES_PATH:-../PoieticExamples}"
+FRAMES_PATH="${1:-../PoieticExamples}"
 
 if ! command -v ${POIETIC} &> /dev/null
 then
-	echo "ERROR: Poietic command '${TOOL}' not found. Set POIETIC environment variable with a valid executable path." 1>&2
-    echo "HINT: If you built PoieticFlows, then the executable is likely '.build/debug/poietic' in PoieticFlows directory" 1>&2
-    echo "HINT: Try 'export POIETIC=../PoieticFlows/.build/debug/poietic' if the PoieticFlows is in the super directory relative to this one" 1>&2
+    echo "ERROR: Command 'poietic' not found." 1>&2
+    echo "HINT: Follow the installation instructions in the PoieticTool package" 1>&2
+    echo "HINT: Get the tool at https://github.com/OpenPoiesis/PoieticTool" 1>&2
+    echo "HINT: Make sure you have '~/.swiftpm/bin' in your PATH." 1>&2
 	exit 1
 fi
 
@@ -57,7 +53,8 @@ for frame_path in ${all_frames[*]}; do
 
     export POIETIC_DESIGN="$OUTPUT_DIR/${frame_name}.poietic"
     echo "Processing frame ${frame_name}"
-    $POIETIC new --import $frame_path --auto-parameters
+    $POIETIC new --import $frame_path
+    $POIETIC edit auto-parameters
 done
 
 # FINALLY: Create the library!
