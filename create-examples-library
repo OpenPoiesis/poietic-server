@@ -53,7 +53,7 @@ for frame_path in ${all_frames[*]}; do
 
     export POIETIC_DESIGN="$OUTPUT_DIR/${frame_name}.poietic"
     echo "Processing frame ${frame_name}"
-    $POIETIC new --import $frame_path
+    $POIETIC new --import $frame_path $POIETIC_DESIGN
     $POIETIC edit auto-parameters
 done
 
