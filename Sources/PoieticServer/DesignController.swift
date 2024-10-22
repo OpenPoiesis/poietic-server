@@ -103,7 +103,7 @@ struct DesignController<Context: RequestContext> {
             timeVariableIndex: simulator.compiledModel.timeVariableIndex
         )
         
-        let encoder = Hummingbird.JSONEncoder()
+        let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         encoder.userInfo[Variant.CoalescedCodingTypeKey] = true
         return try encoder.encode(result, from: request, context: context)
@@ -206,7 +206,7 @@ struct DesignController<Context: RequestContext> {
             controls: controls
         )
         
-        let encoder = Hummingbird.JSONEncoder()
+        let encoder = JSONEncoder()
         encoder.userInfo[Variant.CoalescedCodingTypeKey] = true
         encoder.keyEncodingStrategy = .convertToSnakeCase
         return try encoder.encode(result2, from: request, context: context)
