@@ -8,7 +8,7 @@ just a demonstration of potential server functionality.
 
 Pre-requisites:
 
-1. Build and install [Poietic Tool](https://github.com/OpenPoiesis/PoieticTool).
+1. Build and install [Poietic Tool](https://github.com/OpenPoiesis/poietic-tool).
    See the instructions contained in the project.
 2. Build the server: `swift build`
 
@@ -20,13 +20,13 @@ Run the following script (description follows) to prepare a library from
 examples repository:
 
 ```bash
-git clone https://github.com/OpenPoiesis/PoieticExamples
+git clone https://github.com/OpenPoiesis/poietic-examples
 ./create-examples-library PoieticExamples
 ```
 
 The above script will:
 
-1. Download Flows examples from [Poietic Examples](https://github.com/OpenPoiesis/PoieticExamples).
+1. Download Flows examples from [Poietic Examples](https://github.com/OpenPoiesis/poietic-examples).
 2. Search recursively for `*.poieticframe` in the downloaded directory
 2. Creates a new design file for each frame.
 3. Creates a library `poietic-library.json` in the current directory.

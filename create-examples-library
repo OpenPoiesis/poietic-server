@@ -36,7 +36,7 @@ if ! command -v ${POIETIC} &> /dev/null
 then
     echo "ERROR: Command 'poietic' not found." 1>&2
     echo "HINT: Follow the installation instructions in the PoieticTool package" 1>&2
-    echo "HINT: Get the tool at https://github.com/OpenPoiesis/PoieticTool" 1>&2
+    echo "HINT: Get the tool at https://github.com/OpenPoiesis/poietic-tool" 1>&2
     echo "HINT: Make sure you have '~/.swiftpm/bin' in your PATH." 1>&2
 	exit 1
 fi

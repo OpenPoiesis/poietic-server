@@ -9,7 +9,7 @@
 // - display charts from simulation results
 // - allow user to set variables through (published) controls
 //
-// Server: https://github.com/openpoiesis/PoieticServer
+// Server: https://github.com/openpoiesis/poietic-server
 //
 
 const rootURL = "http://localhost:8080/"

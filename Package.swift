@@ -12,8 +12,8 @@ let package = Package(
             targets: ["PoieticServer"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/openpoiesis/PoieticCore", branch: "main"),
-        .package(url: "https://github.com/openpoiesis/PoieticFlows", branch: "main"),
+        .package(url: "https://github.com/openpoiesis/poietic-core", branch: "main"),
+        .package(url: "https://github.com/openpoiesis/poietic-flows", branch: "main"),
         .package(url: "https://github.com/apple/swift-argument-parser", from: "1.3.0"),
         .package(url: "https://github.com/hummingbird-project/hummingbird.git", branch: "main")
     ],
@@ -23,8 +23,8 @@ let package = Package(
             dependencies: [
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Hummingbird", package: "hummingbird"),
-                .product(name: "PoieticCore", package: "PoieticCore"),
-                .product(name: "PoieticFlows", package: "PoieticFlows"),
+                .product(name: "PoieticCore", package: "poietic-core"),
+                .product(name: "PoieticFlows", package: "poietic-flows"),
             ]
         ),
 //        .testTarget(
